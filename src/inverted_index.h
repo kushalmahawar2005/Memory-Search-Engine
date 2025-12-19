@@ -7,6 +7,7 @@
 
 using namespace std;
 
+// Stores information of a word in a document
 struct Posting {
     int docID;
     int frequency;
@@ -25,12 +26,16 @@ private:
 public:
     InvertedIndex();
 
+    // Core indexing
     void addDocument(const string& filename);
-    void printIndex() const;
 
-    // getters for other modules
-    const unordered_map<string, vector<Posting>>& getIndex() const;
-    const unordered_map<int, string>& getDocMap() const;
+    // ---- Python-safe API methods (READ-ONLY) ----
+    bool containsWord(const string& word) const;
+    vector<int> getDocuments(const string& word) const;
+    vector<int> getPositions(const string& word, int docID) const;
+
+    // Metadata
+    string getFilename(int docID) const;
 };
 
 #endif
