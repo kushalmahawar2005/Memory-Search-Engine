@@ -1,3 +1,4 @@
-packages:
-  - cmake
-  - build-essential
+build-essential
+cmake
+gcc
+g++
