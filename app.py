@@ -181,7 +181,7 @@ elif mode == "Autocomplete":
                 for w in suggestions[:10]:
                     st.write(f"🔹 {w}")
             else:
-            st.info("No suggestions found")
+                st.info("No suggestions found")
 
 
 # =================================================
