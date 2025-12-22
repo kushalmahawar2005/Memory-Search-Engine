@@ -17,21 +17,34 @@ st.divider()
 # -------------------------------------------------
 # LOAD C++ MODULE
 # -------------------------------------------------
+search_engine = None
+module_loaded = False
+
 try:
-    import search_engine
+    import search_engine as cpp_search
+    search_engine = cpp_search
     st.success("C++ search_engine module loaded ✅")
     module_loaded = True
 except Exception as e:
-    st.info("Using Python fallback implementation (C++ module not available) ⚡")
-    import search_engine_py as search_engine
-    module_loaded = True
+    try:
+        import search_engine_py as py_search
+        search_engine = py_search
+        st.info("Using Python fallback implementation ⚡")
+        module_loaded = True
+    except Exception as e2:
+        st.error(f"Failed to load both C++ and Python modules: {str(e2)}")
+        st.stop()
 
 # -------------------------------------------------
 # SESSION STATE (IMPORTANT)
 # -------------------------------------------------
 if "index" not in st.session_state:
-    st.session_state.index = search_engine.InvertedIndex()
-    st.session_state.trie = search_engine.TrieEngine()
+    if search_engine is not None:
+        st.session_state.index = search_engine.InvertedIndex()
+        st.session_state.trie = search_engine.TrieEngine()
+    else:
+        st.session_state.index = None
+        st.session_state.trie = None
 
 # -------------------------------------------------
 # SIDEBAR
@@ -72,6 +85,8 @@ if mode == "Add Document":
     if st.button("➕ Add Document", use_container_width=True):
         if text.strip() == "":
             st.warning("Document text cannot be empty")
+        elif st.session_state.index is None:
+            st.error("Search engine not initialized. Please refresh the page.")
         else:
             st.session_state.index.add_document(doc_id, text)
             st.session_state.trie.insert(text)
