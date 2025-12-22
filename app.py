@@ -22,22 +22,16 @@ try:
     st.success("C++ search_engine module loaded ✅")
     module_loaded = True
 except Exception as e:
-    st.warning("C++ module not available, using Python fallback ⚠️")
-    st.info("The C++ extension needs to be compiled on this system. Using pure Python implementation.")
-    module_loaded = False
+    st.info("Using Python fallback implementation (C++ module not available) ⚡")
+    import search_engine_py as search_engine
+    module_loaded = True
 
 # -------------------------------------------------
 # SESSION STATE (IMPORTANT)
 # -------------------------------------------------
-if module_loaded:
-    if "index" not in st.session_state:
-        st.session_state.index = search_engine.InvertedIndex()
-        st.session_state.trie = search_engine.TrieEngine()
-else:
-    # Python fallback - create dummy objects
-    if "index" not in st.session_state:
-        st.session_state.index = None
-        st.session_state.trie = None
+if "index" not in st.session_state:
+    st.session_state.index = search_engine.InvertedIndex()
+    st.session_state.trie = search_engine.TrieEngine()
 
 # -------------------------------------------------
 # SIDEBAR
@@ -78,8 +72,6 @@ if mode == "Add Document":
     if st.button("➕ Add Document", use_container_width=True):
         if text.strip() == "":
             st.warning("Document text cannot be empty")
-        elif not module_loaded:
-            st.error("C++ module not available. Please wait for compilation or rebuild the extension.")
         else:
             st.session_state.index.add_document(doc_id, text)
             st.session_state.trie.insert(text)
@@ -97,8 +89,6 @@ elif mode == "Ranked Search (TF-IDF)":
     if st.button("Search", use_container_width=True):
         if query.strip() == "":
             st.warning("Enter a search query")
-        elif not module_loaded:
-            st.error("C++ module not available. Cannot perform search.")
         else:
             engine = search_engine.RankingEngine(st.session_state.index)
             results = engine.search(query, top_k)
@@ -121,8 +111,6 @@ elif mode == "Phrase Search":
     if st.button("Search Phrase", use_container_width=True):
         if phrase.strip() == "":
             st.warning("Enter a phrase")
-        elif not module_loaded:
-            st.error("C++ module not available. Cannot perform search.")
         else:
             engine = search_engine.PhraseBooleanEngine(st.session_state.index)
             results = engine.phrase_search(phrase)
@@ -146,8 +134,6 @@ elif mode == "Boolean Search":
     if st.button("Run Boolean Search", use_container_width=True):
         if query.strip() == "":
             st.warning("Enter a boolean query")
-        elif not module_loaded:
-            st.error("C++ module not available. Cannot perform search.")
         else:
             engine = search_engine.PhraseBooleanEngine(st.session_state.index)
             results = engine.boolean_search(query.lower())
@@ -171,17 +157,14 @@ elif mode == "Autocomplete":
     )
 
     if prefix.strip():
-        if not module_loaded:
-            st.error("C++ module not available. Cannot perform autocomplete.")
-        else:
-            suggestions = st.session_state.trie.autocomplete(prefix.lower())
+        suggestions = st.session_state.trie.autocomplete(prefix.lower())
 
-            if suggestions:
-                st.markdown("### 💡 Suggestions")
-                for w in suggestions[:10]:
-                    st.write(f"🔹 {w}")
-            else:
-                st.info("No suggestions found")
+        if suggestions:
+            st.markdown("### 💡 Suggestions")
+            for w in suggestions[:10]:
+                st.write(f"🔹 {w}")
+        else:
+            st.info("No suggestions found")
 
 
 # =================================================
