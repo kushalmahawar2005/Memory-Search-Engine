@@ -78,6 +78,8 @@ if mode == "Add Document":
     if st.button("➕ Add Document", use_container_width=True):
         if text.strip() == "":
             st.warning("Document text cannot be empty")
+        elif not module_loaded:
+            st.error("C++ module not available. Please wait for compilation or rebuild the extension.")
         else:
             st.session_state.index.add_document(doc_id, text)
             st.session_state.trie.insert(text)
@@ -95,6 +97,8 @@ elif mode == "Ranked Search (TF-IDF)":
     if st.button("Search", use_container_width=True):
         if query.strip() == "":
             st.warning("Enter a search query")
+        elif not module_loaded:
+            st.error("C++ module not available. Cannot perform search.")
         else:
             engine = search_engine.RankingEngine(st.session_state.index)
             results = engine.search(query, top_k)
@@ -117,6 +121,8 @@ elif mode == "Phrase Search":
     if st.button("Search Phrase", use_container_width=True):
         if phrase.strip() == "":
             st.warning("Enter a phrase")
+        elif not module_loaded:
+            st.error("C++ module not available. Cannot perform search.")
         else:
             engine = search_engine.PhraseBooleanEngine(st.session_state.index)
             results = engine.phrase_search(phrase)
@@ -140,6 +146,8 @@ elif mode == "Boolean Search":
     if st.button("Run Boolean Search", use_container_width=True):
         if query.strip() == "":
             st.warning("Enter a boolean query")
+        elif not module_loaded:
+            st.error("C++ module not available. Cannot perform search.")
         else:
             engine = search_engine.PhraseBooleanEngine(st.session_state.index)
             results = engine.boolean_search(query.lower())
@@ -163,13 +171,16 @@ elif mode == "Autocomplete":
     )
 
     if prefix.strip():
-        suggestions = st.session_state.trie.autocomplete(prefix.lower())
-
-        if suggestions:
-            st.markdown("### 💡 Suggestions")
-            for w in suggestions[:10]:
-                st.write(f"🔹 {w}")
+        if not module_loaded:
+            st.error("C++ module not available. Cannot perform autocomplete.")
         else:
+            suggestions = st.session_state.trie.autocomplete(prefix.lower())
+
+            if suggestions:
+                st.markdown("### 💡 Suggestions")
+                for w in suggestions[:10]:
+                    st.write(f"🔹 {w}")
+            else:
             st.info("No suggestions found")
 
 
