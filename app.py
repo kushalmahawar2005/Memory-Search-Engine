@@ -23,7 +23,7 @@ module_loaded = False
 try:
     import search_engine as cpp_search
     search_engine = cpp_search
-    st.success("C++ search_engine module loaded ✅")
+    st.success("C++ search_engine module loaded ")
     module_loaded = True
 except Exception as e:
     try:
@@ -35,9 +35,6 @@ except Exception as e:
         st.error(f"Failed to load both C++ and Python modules: {str(e2)}")
         st.stop()
 
-# -------------------------------------------------
-# SESSION STATE (IMPORTANT)
-# -------------------------------------------------
 if "index" not in st.session_state:
     if search_engine is not None:
         st.session_state.index = search_engine.InvertedIndex()
@@ -46,11 +43,9 @@ if "index" not in st.session_state:
         st.session_state.index = None
         st.session_state.trie = None
 
-# -------------------------------------------------
-# SIDEBAR
-# -------------------------------------------------
+
 with st.sidebar:
-    st.header("⚙ Search Options")
+    st.header("Search Options")
 
     mode = st.radio(
         "Choose Mode",
@@ -64,11 +59,8 @@ with st.sidebar:
         ]
     )
 
-# =================================================
-# ADD DOCUMENT
-# =================================================
 if mode == "Add Document":
-    st.subheader("📄 Add Document")
+    st.subheader("Add Document")
 
     doc_id = st.number_input(
         "Document ID",
@@ -90,11 +82,8 @@ if mode == "Add Document":
         else:
             st.session_state.index.add_document(doc_id, text)
             st.session_state.trie.insert(text)
-            st.success(f"Document {doc_id} added successfully ✅")
+            st.success(f"Document {doc_id} added successfully ")
 
-# =================================================
-# RANKED SEARCH (TF-IDF)
-# =================================================
 elif mode == "Ranked Search (TF-IDF)":
     st.subheader("🔎 Ranked Search (TF-IDF)")
 
@@ -115,9 +104,6 @@ elif mode == "Ranked Search (TF-IDF)":
                 for doc_id, score in results:
                     st.write(f"📄 **Doc {doc_id}** — Score: `{score:.4f}`")
 
-# =================================================
-# PHRASE SEARCH
-# =================================================
 elif mode == "Phrase Search":
     st.subheader("🧠 Phrase Search")
 
@@ -133,13 +119,10 @@ elif mode == "Phrase Search":
             if not results:
                 st.info("No documents found")
             else:
-                st.markdown("### 📌 Matching Documents")
+                st.markdown("###  Matching Documents")
                 for doc in results:
                     st.write(f"📄 Document ID: {doc}")
 
-# =================================================
-# BOOLEAN SEARCH
-# =================================================
 elif mode == "Boolean Search":
     st.subheader("🔀 Boolean Search")
 
@@ -160,9 +143,6 @@ elif mode == "Boolean Search":
                 for doc in results:
                     st.write(f"📄 Document ID: {doc}")
 
-# =================================================
-# AUTOCOMPLETE
-# =================================================
 elif mode == "Autocomplete":
     st.subheader("⚡ Autocomplete (Real-time)")
 
@@ -177,7 +157,7 @@ elif mode == "Autocomplete":
         if suggestions:
             st.markdown("### 💡 Suggestions")
             for w in suggestions[:10]:
-                st.write(f"🔹 {w}")
+                st.write(f" {w}")
         else:
             st.info("No suggestions found")
 
@@ -186,11 +166,11 @@ elif mode == "Autocomplete":
 # ABOUT PROJECT
 # =================================================
 else:
-    st.subheader("📘 About This Project")
+    st.subheader(" About This Project")
 
     st.markdown(
         """
-        ### 🧠 In-Memory Search Engine
+        ###  In-Memory Search Engine
 
         **Core Concepts Used**
         - Inverted Index
@@ -211,7 +191,7 @@ else:
         - Interview-grade project
 
         ---
-        👨‍💻 Built for learning, performance & placements
+         Built for learning, performance & placements
         """
     )
 
