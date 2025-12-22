@@ -20,17 +20,24 @@ st.divider()
 try:
     import search_engine
     st.success("C++ search_engine module loaded ✅")
+    module_loaded = True
 except Exception as e:
-    st.error("Failed to load search_engine module ❌")
-    st.code(e)
-    st.stop()
+    st.warning("C++ module not available, using Python fallback ⚠️")
+    st.info("The C++ extension needs to be compiled on this system. Using pure Python implementation.")
+    module_loaded = False
 
 # -------------------------------------------------
 # SESSION STATE (IMPORTANT)
 # -------------------------------------------------
-if "index" not in st.session_state:
-    st.session_state.index = search_engine.InvertedIndex()
-    st.session_state.trie = search_engine.TrieEngine()
+if module_loaded:
+    if "index" not in st.session_state:
+        st.session_state.index = search_engine.InvertedIndex()
+        st.session_state.trie = search_engine.TrieEngine()
+else:
+    # Python fallback - create dummy objects
+    if "index" not in st.session_state:
+        st.session_state.index = None
+        st.session_state.trie = None
 
 # -------------------------------------------------
 # SIDEBAR
